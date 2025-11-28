@@ -1,0 +1,10 @@
+firebase-admin
+google-cloud-firestore
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
+streamlit
+altair
+pandas
+numpy
+toml
