@@ -8,7 +8,7 @@ from google.oauth2 import service_account
 # ============================
 @st.cache_data
 def load_data():
-    return pd.read_csv("movies.csv")   # <-- change to your file
+    return pd.read_csv("movies.csv")   
 movies_df = load_data()
 
 st.title("Netflix app")
@@ -46,28 +46,53 @@ if st.sidebar.button("Filtrar director"):
     st.subheader(f"Filmes dirigidos por {selected_director} — {total} filmes encontrados")
     st.dataframe(result)
 
+
+# ============================
+# Firestore setup
+# ============================
+# Path to your service account JSON
+service_account_path = "movies-project-firebase.json"
+
+# Create credentials and client
+credentials = service_account.Credentials.from_service_account_file(service_account_path)
+db = firestore.Client(credentials=credentials)
+
+
 # ============================
 # NEW FILM ENTRY
 # ============================
 st.sidebar.subheader("Nuevo filme")
 
 # --- Input fields ---
-new_name = st.sidebar.text_input("Name:", placeholder="Press Enter to apply")
+new_name = st.sidebar.text_input("Nombre del filme:", placeholder="Ingresa el título")
 
 new_company = st.sidebar.selectbox(
-    "Company",
+    "Compañía",
     sorted(movies_df["company"].dropna().unique())
 )
 
-new_director = st.sidebar.text_input("Director")
-new_genre = st.sidebar.text_input("Genre")
+# Directors list gets updated automatically from DataFrame
+director_list = sorted(movies_df["director"].dropna().unique())
+new_director = st.sidebar.selectbox("Director", director_list + ["-- Nuevo Director --"])
 
-# --- Add movie ---
+# If user chooses "new director", show a text box
+if new_director == "-- Nuevo Director --":
+    new_director = st.sidebar.text_input("Agrega nuevo director:")
+
+# Genres list
+genre_list = sorted(movies_df["genre"].dropna().unique())
+new_genre = st.sidebar.selectbox("Género", genre_list + ["-- Nuevo Género --"])
+
+if new_genre == "-- Nuevo Género --":
+    new_genre = st.sidebar.text_input("Agrega nuevo género:")
+
+# --- Button ---
 if st.sidebar.button("Agregar filme"):
     if new_name.strip() == "":
-        st.sidebar.error("El nombre del filme no puede estar vacío.")
+        st.sidebar.error("❌ El nombre del filme no puede estar vacío.")
     else:
-        # Save to Firestore
+
+        # ======== Save to Firestore ========
         doc_ref = db.collection("movies").document(new_name)
         doc_ref.set({
             "name": new_name,
@@ -76,20 +101,20 @@ if st.sidebar.button("Agregar filme"):
             "genre": new_genre
         })
 
-        # Add to DataFrame
+        # ======== Add to DataFrame ========
         new_row = {
             "name": new_name,
             "company": new_company,
             "director": new_director,
             "genre": new_genre
         }
+
         movies_df = pd.concat([movies_df, pd.DataFrame([new_row])], ignore_index=True)
 
-        st.sidebar.success("Filme agregado correctamente!")
+        st.sidebar.success("✅ Filme agregado correctamente!")
 
-        # Force page refresh to show new movie in tables and dropdowns
+        # Refresh the page so dropdown lists update
         st.rerun()
-
 
 # ============================
 # MAIN AREA — SHOW ALL
