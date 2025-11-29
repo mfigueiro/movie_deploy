@@ -93,8 +93,7 @@ if st.sidebar.button("Agregar filme"):
     if new_name.strip() == "":
         st.sidebar.error("❌ El nombre del filme no puede estar vacío.")
     else:
-
-       # ======== Save to Firestore ========
+      # ======== Save to Firestore ========
     doc_ref = db.collection("movies").document(new_name)
     doc_ref.set({
         "name": new_name,
@@ -102,13 +101,6 @@ if st.sidebar.button("Agregar filme"):
         "director": new_director,
         "genre": new_genre
     })
-
-    # ======== Verify the movie was added ========
-    added_movie = doc_ref.get()
-    if added_movie.exists:
-        st.sidebar.success(f"✅ Filme '{added_movie.to_dict()['name']}' agregado correctamente a Firestore!")
-    else:
-        st.sidebar.error("❌ Hubo un error al agregar el filme a Firestore.")
 
     # ======== Add to DataFrame ========
     new_row = {
@@ -120,8 +112,10 @@ if st.sidebar.button("Agregar filme"):
 
     movies_df = pd.concat([movies_df, pd.DataFrame([new_row])], ignore_index=True)
 
-    # Optional: show the last added movie in the main area
-    st.dataframe(movies_df.tail(1))
+    st.sidebar.success("✅ Filme agregado correctamente!")
 
     # Refresh the page so dropdown lists update
     st.rerun()
+
+
+          
