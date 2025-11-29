@@ -2,6 +2,7 @@ import json
 from google.cloud import firestore
 from google.oauth2 import service_account
 import streamlit as st
+import pandas as pd
 
 # ================================
 # Load Firebase Credentials
