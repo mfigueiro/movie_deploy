@@ -1,7 +1,17 @@
-import streamlit as st
-import pandas as pd
+import json
 from google.cloud import firestore
 from google.oauth2 import service_account
+import streamlit as st
+
+# ================================
+# Load Firebase Credentials
+# ================================
+key_dict = st.secrets["textkey"]
+
+creds = service_account.Credentials.from_service_account_info(key_dict)
+db = firestore.Client(credentials=creds, project=key_dict["project_id"])
+
+dbNames = db.collection("movies")
 
 # ============================
 # Load dataset
@@ -45,18 +55,6 @@ if st.sidebar.button("Filtrar director"):
 
     st.subheader(f"Filmes dirigidos por {selected_director} — {total} filmes encontrados")
     st.dataframe(result)
-
-
-# ============================
-# Firestore setup
-# ============================
-# Path to your service account JSON
-service_account_path = "movies-project-firebase.json"
-
-# Create credentials and client
-credentials = service_account.Credentials.from_service_account_file(service_account_path)
-db = firestore.Client(credentials=credentials)
-
 
 # ============================
 # NEW FILM ENTRY
