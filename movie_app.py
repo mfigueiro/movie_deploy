@@ -1,8 +1,8 @@
 import json
+import pandas as pd
 from google.cloud import firestore
 from google.oauth2 import service_account
 import streamlit as st
-import pandas as pd
 
 # ================================
 # Load Firebase Credentials
@@ -12,7 +12,8 @@ key_dict = st.secrets["textkey"]
 creds = service_account.Credentials.from_service_account_info(key_dict)
 db = firestore.Client(credentials=creds, project=key_dict["project_id"])
 
-dbNames = db.collection("movies")
+# Optional: remove unused variable
+# dbNames = db.collection("movies")
 
 # ============================
 # Load dataset
@@ -23,10 +24,7 @@ def load_data():
     return pd.read_csv(url)
 
 movies_df = load_data()
-#st.write(movies_df.head())
-
-#st.title("Netflix app")
-st.write("Done! (using st.cache)")
+st.write(movies_df.head())
 
 # ============================
 # SIDEBAR
@@ -93,36 +91,33 @@ if st.sidebar.button("Agregar filme"):
     if new_name.strip() == "":
         st.sidebar.error("❌ El nombre del filme no puede estar vacío.")
     else:
-      # ======== Save to Firestore ========
-    doc_ref = db.collection("movies").document(new_name)
-    doc_ref.set({
-        "name": new_name,
-        "company": new_company,
-        "director": new_director,
-        "genre": new_genre
-    })
+        # ======== Save to Firestore ========
+        doc_ref = db.collection("movies").document(new_name)
+        doc_ref.set({
+            "name": new_name,
+            "company": new_company,
+            "director": new_director,
+            "genre": new_genre
+        })
 
-    # ======== Add to DataFrame ========
-    new_row = {
-        "name": new_name,
-        "company": new_company,
-        "director": new_director,
-        "genre": new_genre
-    }
+        # ======== Add to DataFrame ========
+        new_row = {
+            "name": new_name,
+            "company": new_company,
+            "director": new_director,
+            "genre": new_genre
+        }
 
-    movies_df = pd.concat([movies_df, pd.DataFrame([new_row])], ignore_index=True)
+        movies_df = pd.concat([movies_df, pd.DataFrame([new_row])], ignore_index=True)
 
-    st.sidebar.success("✅ Filme agregado correctamente!")
+        st.sidebar.success("✅ Filme agregado correctamente!")
 
-    # Refresh the page so dropdown lists update
-    st.rerun()
-    
+        # Refresh the page so dropdown lists update
+        st.rerun()
+
 # ============================
 # MAIN AREA — SHOW ALL
 # ============================
 if show_all:
     st.header("Todos los filmes")
     st.dataframe(movies_df.head(500))
-
-
-          
