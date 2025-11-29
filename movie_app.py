@@ -47,23 +47,45 @@ if st.sidebar.button("Filtrar director"):
 # ============================
 st.sidebar.subheader("Nuevo filme")
 
+# --- Input fields ---
 new_name = st.sidebar.text_input("Name:", placeholder="Press Enter to apply")
-new_company = st.sidebar.selectbox("Company", sorted(movies_df["company"].dropna().unique()))
+
+new_company = st.sidebar.selectbox(
+    "Company",
+    sorted(movies_df["company"].dropna().unique())
+)
+
 new_director = st.sidebar.text_input("Director")
 new_genre = st.sidebar.text_input("Genre")
 
+# --- Add movie ---
 if st.sidebar.button("Agregar filme"):
     if new_name.strip() == "":
         st.sidebar.error("El nombre del filme no puede estar vacío.")
     else:
+        # Save to Firestore
+        doc_ref = db.collection("movies").document(new_name)
+        doc_ref.set({
+            "name": new_name,
+            "company": new_company,
+            "director": new_director,
+            "genre": new_genre
+        })
+
+        # Add to DataFrame
         new_row = {
             "name": new_name,
-            "genre": new_genre,
+            "company": new_company,
             "director": new_director,
-            "company": new_company
+            "genre": new_genre
         }
         movies_df = pd.concat([movies_df, pd.DataFrame([new_row])], ignore_index=True)
+
         st.sidebar.success("Filme agregado correctamente!")
+
+        # Force page refresh to show new movie in tables and dropdowns
+        st.rerun()
+
 
 # ============================
 # MAIN AREA — SHOW ALL
