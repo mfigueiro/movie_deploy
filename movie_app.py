@@ -95,28 +95,37 @@ if st.sidebar.button("Agregar filme"):
     else:
 
         # ======== Save to Firestore ========
-        doc_ref = db.collection("movies").document(new_name)
-        doc_ref.set({
-            "name": new_name,
-            "company": new_company,
-            "director": new_director,
-            "genre": new_genre
-        })
+doc_ref = db.collection("movies").document(new_name)
+doc_ref.set({
+    "name": new_name,
+    "company": new_company,
+    "director": new_director,
+    "genre": new_genre
+})
 
-        # ======== Add to DataFrame ========
-        new_row = {
-            "name": new_name,
-            "company": new_company,
-            "director": new_director,
-            "genre": new_genre
-        }
+# ======== Verify the movie was added ========
+added_movie = doc_ref.get()
+if added_movie.exists:
+    st.sidebar.success(f"✅ Filme '{added_movie.to_dict()['name']}' agregado correctamente a Firestore!")
+else:
+    st.sidebar.error("❌ Hubo un error al agregar el filme a Firestore.")
 
-        movies_df = pd.concat([movies_df, pd.DataFrame([new_row])], ignore_index=True)
+# ======== Add to DataFrame ========
+new_row = {
+    "name": new_name,
+    "company": new_company,
+    "director": new_director,
+    "genre": new_genre
+}
 
-        st.sidebar.success("✅ Filme agregado correctamente!")
+movies_df = pd.concat([movies_df, pd.DataFrame([new_row])], ignore_index=True)
 
-        # Refresh the page so dropdown lists update
-        #st.rerun()
+# Optional: show the last added movie in the main area
+st.dataframe(movies_df.tail(1))
+
+# Refresh the page so dropdown lists update
+st.rerun()
+
 
 # ============================
 # MAIN AREA — SHOW ALL
