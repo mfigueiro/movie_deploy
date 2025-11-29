@@ -116,6 +116,13 @@ if st.sidebar.button("Agregar filme"):
 
     # Refresh the page so dropdown lists update
     st.rerun()
+    
+# ============================
+# MAIN AREA — SHOW ALL
+# ============================
+if show_all:
+    st.header("Todos los filmes")
+    st.dataframe(movies_df.head(500))
 
 
           
