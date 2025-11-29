@@ -112,7 +112,13 @@ if st.sidebar.button("Agregar filme"):
 
         movies_df = pd.concat([movies_df, pd.DataFrame([new_row])], ignore_index=True)
 
-        st.sidebar.success("✅ Filme agregado correctamente!")
+        # ======== Show success message ========
+        st.sidebar.success(f"✅ Filme '{new_name}' agregado correctamente!")
+
+        # Optional: show the last added movie in main area
+        st.dataframe(movies_df.tail(1))
+
+        #st.sidebar.success("✅ Filme agregado correctamente!")
 
         # Refresh the page so dropdown lists update
         st.rerun()
