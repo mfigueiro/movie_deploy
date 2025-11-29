@@ -28,7 +28,9 @@ title_query = st.sidebar.text_input("")
 
 if st.sidebar.button("Buscar filmes"):
     result = movies_df[movies_df["name"].str.contains(title_query, case=False, na=False)]
-    st.subheader(f"Resultados para '{title_query}'")
+    total = len(result)
+
+    st.subheader(f"Resultados para '{title_query}' — {total} filmes encontrados")
     st.dataframe(result)
 
 # -------- Filtrar por director --------
@@ -39,7 +41,9 @@ selected_director = st.sidebar.selectbox(" ", directors)
 
 if st.sidebar.button("Filtrar director"):
     result = movies_df[movies_df["director"] == selected_director]
-    st.subheader(f"Filmes dirigidos por {selected_director}")
+    total = len(result)
+
+    st.subheader(f"Filmes dirigidos por {selected_director} — {total} filmes encontrados")
     st.dataframe(result)
 
 # ============================
