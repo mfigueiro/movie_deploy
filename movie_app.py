@@ -24,7 +24,9 @@ def load_data():
     return pd.read_csv(url)
 
 movies_df = load_data()
-st.write(movies_df.head())
+
+st.write("Done! (using st.cache)")
+##st.write(movies_df.head())
 
 # ============================
 # SIDEBAR
