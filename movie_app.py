@@ -18,7 +18,9 @@ dbNames = db.collection("movies")
 # ============================
 @st.cache_data
 def load_data():
-    return pd.read_csv("https://raw.githubusercontent.com/mfigueiro/movie_deploy/refs/heads/main/movies.csv")   
+    url = "https://raw.githubusercontent.com/mfigueiro/movie_deploy/main/movies.csv"
+    return pd.read_csv(url)
+
 movies_df = load_data()
 
 st.title("Netflix app")
