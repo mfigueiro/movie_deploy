@@ -116,7 +116,7 @@ if st.sidebar.button("Agregar filme"):
         st.sidebar.success("✅ Filme agregado correctamente!")
 
         # Refresh the page so dropdown lists update
-        st.rerun()
+        #st.rerun()
 
 # ============================
 # MAIN AREA — SHOW ALL
